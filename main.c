@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 	int stat;
 	(void)argc;
 	stat = shell_loop(argv[0]);
-	return (stat);
+	exit(stat);
 }
 
 /**
