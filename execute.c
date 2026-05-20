@@ -9,7 +9,6 @@
 static void print_not_found(char *prog_name, int line_num, char *cmd)
 {
 	fprintf(stderr, "%s: %d: %s: not found\n", prog_name, line_num, cmd);
-	exit(127);
 }
 
 /**
