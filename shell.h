@@ -30,5 +30,6 @@ int execute_command(char **args, char *prog_name, int line_num);
 /* builtins.c */
 int handle_builtin(char **args, char *line);
 void print_env(void);
+int is_number(char *s);
 
 #endif /* SHELL_H */

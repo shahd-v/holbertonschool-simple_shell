@@ -1,5 +1,4 @@
 #include "shell.h"
-int last_status = 0;
 
 /**
  * main - entry point of the shell
@@ -33,7 +32,7 @@ int shell_loop(char *prog_name)
 	while (1)
 	{
 		if (interactive)
-			write(STDOUT_FILENO, "WriteSomething;> ", 17);
+			write(STDOUT_FILENO, "WriteSomeThing;>$ ", 18);
 		nread = getline(&line, &len, stdin);
 		line_num++;
 		if (nread == -1)
@@ -54,7 +53,7 @@ int shell_loop(char *prog_name)
 			free_tokens(args);
 			continue;
 		}
-		stat = execute_command(args, prog_name, line_num);
+		last_status = execute_command(args, prog_name, line_num);
 		free_tokens(args);
 	}
 	free(line);

@@ -1,4 +1,5 @@
 #include "shell.h"
+int last_status = 0;
 
 /**
  * print_not_found - prints "prog: line: cmd: not found" to stderr
@@ -55,7 +56,10 @@ int execute_command(char **args, char *prog_name, int line_num)
 		free(full_path);
 
 		if (WIFEXITED(status))
+		{
 			last_status = WEXITSTATUS(status);
+			return (last_status);
+		}
 	}
 	return (last_status);
 }
