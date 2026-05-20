@@ -1,18 +1,25 @@
 #include "shell.h"
 
 /**
- * print_env - prints each environment variable on its own line (Task 6)
+ * print_env - Prints the current environment variables
+ *
+ * Description: This function iterates through the global environment
+ * array and prints each variable in the format 'KEY=VALUE'. It is used
+ * to implement the 'env' built-in command in the shell.
+ *
+ * Return: Always 0.
  */
-void print_env(void)
+int print_env(void)
 {
-	int i = 0;
+	int i;
 
-	while (environ[i])
+	for (i = 0; environ[i] != NULL; i++)
 	{
 		write(STDOUT_FILENO, environ[i], strlen(environ[i]));
 		write(STDOUT_FILENO, "\n", 1);
-		i++;
 	}
+
+	return (0);
 }
 
 /**
@@ -39,42 +46,4 @@ int is_number(char *s)
 		return (0);
 	}
 	return (1);
-}
-
-/**
- * handle_builtin - checks for and executes built-in commands
- * @args: tokenized command
- * @line: the raw line buffer (freed before exit to avoid leaks)
- *
- * Return: 1 if a built-in was handled, 0 otherwise
- */
-int handle_builtin(char **args, char *line)
-{
-	int code;
-	if (strcmp(args[0], "exit") == 0)
-	{
-		if (args[1] == NULL)
-		{
-			free_tokens(args);
-			free(line);
-			exit(last_status);
-		}
-		if (!is_number(args[1]))
-		{
-			fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", args[1]);
-			free_tokens(args);
-			free(line);
-			exit(2);
-		}
-		code = atoi(args[1]);
-		free_tokens(args);
-		free(line);
-		exit(code);
-	}
-	if (strcmp(args[0], "env") == 0)
-	{
-		print_env();
-		return (1);
-	}
-	return (0);
 }
