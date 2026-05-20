@@ -40,8 +40,7 @@ int shell_loop(char *prog_name)
 		{
 			if (interactive)
 				write(STDOUT_FILENO, "\n", 1);
-			return (127);
-			break;
+			return (stat);
 		}
 		args = tokenize(line);
 		if (args == NULL || args[0] == NULL)
