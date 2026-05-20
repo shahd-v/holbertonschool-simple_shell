@@ -35,6 +35,7 @@ char *read_line(void)
 void trim_newline(char *line)
 {
 	int len = strlen(line);
+
 	while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'
 		|| line[len - 1] == ' ' || line[len - 1] == '\t'))
 			line[--len] = '\0';
