@@ -13,7 +13,7 @@
 extern char **environ;
 
 /* main.c */
-void shell_loop(char *prog_name);
+int shell_loop(char *prog_name);
 
 /* tokenize.c */
 char **tokenize(char *line);

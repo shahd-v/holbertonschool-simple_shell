@@ -51,6 +51,9 @@ int execute_command(char **args, char *prog_name, int line_num)
 	{
 		waitpid(pid, &status, 0);
 		free(full_path);
+
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
 	}
 	return (status);
 }

@@ -27,7 +27,7 @@ int shell_loop(char *prog_name)
 	size_t len = 0;
 	ssize_t nread;
 	char **args;
-	int line_num = 0, interactive, stat;
+	int line_num = 0, interactive, stat = 0;
 
 	interactive = isatty(STDIN_FILENO);
 	while (1)
