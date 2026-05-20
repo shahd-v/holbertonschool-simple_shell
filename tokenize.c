@@ -15,6 +15,7 @@ char *read_line(void)
 	ssize_t nread;
 
 	nread = getline(&line, &len, stdin);
+
 	if (nread == -1)
 	{
 		free(line);
@@ -55,7 +56,7 @@ int is_empty(const char *line)
 	while (*line)
 	{
 		if (*line != ' ' && *line != '\t' && *line != '\n')
-		return (0);
+			return (0);
 		line++;
 	}
 

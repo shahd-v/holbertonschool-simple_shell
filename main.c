@@ -11,6 +11,7 @@ int last_status = 0;
 int main(void)
 {
 	char *line;
+
 	while (1)
 	{
 
@@ -48,8 +49,8 @@ static int process_line(char *line)
 	char **args;
 	char *cmd;
 	int i = 0;
-	trim_newline(line);
 
+	trim_newline(line);
 	if (is_empty(line))
 		return (0);
 
