@@ -1,4 +1,5 @@
 #include "shell.h"
+int last_status = 0;
 
 /**
  * main - entry point of the shell
@@ -9,10 +10,9 @@
  */
 int main(int argc, char **argv)
 {
-	int stat;
 	(void)argc;
-	stat = shell_loop(argv[0]);
-	exit(stat);
+	shell_loop(argv[0]);
+	exit(last_status);
 }
 
 /**
@@ -27,7 +27,7 @@ int shell_loop(char *prog_name)
 	size_t len = 0;
 	ssize_t nread;
 	char **args;
-	int line_num = 0, interactive, stat = 0;
+	int line_num = 0, interactive;
 
 	interactive = isatty(STDIN_FILENO);
 	while (1)
@@ -40,7 +40,8 @@ int shell_loop(char *prog_name)
 		{
 			if (interactive)
 				write(STDOUT_FILENO, "\n", 1);
-			return (127);
+			free(line);
+			return (last_status);
 		}
 		args = tokenize(line);
 		if (args == NULL || args[0] == NULL)
@@ -57,5 +58,5 @@ int shell_loop(char *prog_name)
 		free_tokens(args);
 	}
 	free(line);
-	return (stat);
+	return (last_status);
 }

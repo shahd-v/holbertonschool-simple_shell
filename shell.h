@@ -11,6 +11,7 @@
 #include <errno.h>
 
 extern char **environ;
+extern int last_status;
 
 /* main.c */
 int shell_loop(char *prog_name);
