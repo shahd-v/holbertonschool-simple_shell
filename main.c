@@ -152,7 +152,7 @@ static void handle_child(char **args, char *cmd)
 
 	if (execve(cmd, args, environ) == -1)
 	{
-		fprintf(stderr, "./hsh: %s: No such file or directory\n", args[>
+		fprintf(stderr, "./hsh: %s: No such file or directory\n", args[0]);
 		free(args);
 		free(cmd);
 		exit(127);
