@@ -1,6 +1,5 @@
 #ifndef SHELL_H
 #define SHELL_H
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,9 +11,10 @@
 #include <errno.h>
 
 extern char **environ;
+extern int last_status;
 
 /* main.c */
-void shell_loop(char *prog_name);
+int shell_loop(char *prog_name);
 
 /* tokenize.c */
 char **tokenize(char *line);

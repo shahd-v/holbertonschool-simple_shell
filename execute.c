@@ -29,6 +29,7 @@ int execute_command(char **args, char *prog_name, int line_num)
 	if (full_path == NULL)
 	{
 		print_not_found(prog_name, line_num, args[0]);
+		last_status = 127;
 		return (127);
 	}
 	pid = fork();
@@ -36,6 +37,7 @@ int execute_command(char **args, char *prog_name, int line_num)
 	{
 		perror(prog_name);
 		free(full_path);
+		last_status = 1;
 		return (1);
 	}
 	if (pid == 0)
@@ -44,13 +46,16 @@ int execute_command(char **args, char *prog_name, int line_num)
 		{
 			perror(prog_name);
 			free(full_path);
-			_exit(127);
+			exit(127);
 		}
 	}
 	else
 	{
 		waitpid(pid, &status, 0);
 		free(full_path);
+
+		if (WIFEXITED(status))
+			last_status = WEXITSTATUS(status);
 	}
-	return (status);
+	return (last_status);
 }
