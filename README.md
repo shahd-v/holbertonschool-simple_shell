@@ -153,7 +153,8 @@ on failure. This is also what `bash` and `sh` do.
 | `shell.h`    | Header — includes, prototypes, `environ` declaration    |
 | `shell.c`    | `main`, the REPL loop, `process_line`, fork/exec wiring |
 | `path.c`     | `_getenv`, `build_path`, `find_in_path` (PATH logic)    |
-| `0.1-shell.c`| Historical snapshot from task 1                         |
+| `tokenize.c` | To design and cutting the arguments                     |
+| `builituns.c`| is_number method and env printer method                 |
 | `README.md`  | This file                                               |
 | `AUTHORS`    | List of project contributors                            |
 | `man_1_simple_shell` | Manual page (groff format)                      |
