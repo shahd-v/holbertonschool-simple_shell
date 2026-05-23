@@ -1,6 +1,5 @@
 #ifndef SHELL_H
 #define SHELL_H
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,23 +11,21 @@
 #include <errno.h>
 
 extern char **environ;
+extern int last_status;
 
-/* main.c */
-void shell_loop(char *prog_name);
+/* main.c  static methods */
 
 /* tokenize.c */
-char **tokenize(char *line);
-void free_tokens(char **tokens);
+char *read_line(void);
+void trim_newline(char *line);
+int is_empty(const char *line);
+char **split_line(char *line);
 
 /* path.c */
-char *find_in_path(char *command);
-char *get_env_value(const char *name);
-
-/* execute.c */
-int execute_command(char **args, char *prog_name, int line_num);
+char *find_path(char *cmd);
 
 /* builtins.c */
-int handle_builtin(char **args, char *line);
-void print_env(void);
+int print_env(void);
+int is_number(char *s);
 
 #endif /* SHELL_H */

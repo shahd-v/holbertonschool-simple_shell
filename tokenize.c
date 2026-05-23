@@ -1,76 +1,98 @@
 #include "shell.h"
 
 /**
- * count_tokens - counts whitespace-separated tokens
- * @s: input string (will be duplicated internally)
+ * read_line - gets a full line of input from stdin
  *
- * Return: number of tokens
+ * Description: Allocates and returns a buffer containing the l>
+ * read from standard input. Handles dynamic resizing as needed.
+ *
+ * Return: pointer to the allocated buffer, or NULL on failure >
  */
-static int count_tokens(char *s)
+char *read_line(void)
 {
-	int count = 0;
-	char *dup, *tok;
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t nread;
 
-	dup = strdup(s);
-	if (dup == NULL)
-		return (0);
-	tok = strtok(dup, " \t\n");
-	while (tok)
+	nread = getline(&line, &len, stdin);
+
+	if (nread == -1)
 	{
-		count++;
-		tok = strtok(NULL, " \t\n");
+		free(line);
+		return (NULL);
 	}
-	free(dup);
-	return (count);
+	return (line);
 }
 
 /**
- * tokenize - splits a line into tokens
- * @line: input line from getline
+ * trim_newline - removes the trailing newline from a string
+ * @line: pointer to the string to modify
  *
- * Return: NULL-terminated array of malloc'd strings, or NULL on failure
+ * Description: Checks if the last character in the string is a>
+ * ('\n') and replaces it with a null terminator. Does nothing >
+ * string is NULL or does not contain a newline at the end.
  */
-char **tokenize(char *line)
+void trim_newline(char *line)
 {
-	int n, i = 0;
-	char **tokens, *tok;
+	int len = strlen(line);
 
-	if (line == NULL)
-		return (NULL);
-	n = count_tokens(line);
-	tokens = malloc(sizeof(char *) * (n + 1));
-	if (tokens == NULL)
-		return (NULL);
-	tok = strtok(line, " \t\n");
-	while (tok)
+	while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'
+		|| line[len - 1] == ' ' || line[len - 1] == '\t'))
 	{
-		tokens[i] = strdup(tok);
-		if (tokens[i] == NULL)
-		{
-			free_tokens(tokens);
-			return (NULL);
-		}
-		i++;
-		tok = strtok(NULL, " \t\n");
+		line[--len] = '\0';
 	}
+}
+
+/**
+ * is_empty - checks if a string contains only whitespace or is>
+ * @line: pointer to the string to check
+ *
+ * Description: Determines whether the given string is NULL, an>
+ * string, or consists only of whitespace characters (spaces, t>
+ *
+ * Return: 1 if the string is empty or whitespace-only, 0 other>
+ */
+int is_empty(const char *line)
+{
+	while (*line)
+	{
+		if (*line != ' ' && *line != '\t' && *line != '\n')
+			return (0);
+		line++;
+	}
+
+	return (1);
+}
+/**
+ * split_line - splits a line into an array of tokens
+ * @line: pointer to the input string to tokenize
+ *
+ * Description: Breaks the given line into separate tokens using
+ * whitespace as delimiters. Allocates memory for the array of
+ * token strings. The last element of the returned array is NUL>
+ *
+ * Return: pointer to an array of token strings, or NULL on fai>
+ */
+char **split_line(char *line)
+{
+	char **tokens;
+	char *token;
+	int i = 0;
+
+	tokens = malloc(64 * sizeof(char *));
+	if (!tokens)
+		return (NULL);
+
+	token = strtok(line, " \t");
+
+	while (token != NULL)
+	{
+		tokens[i++] = token;
+		token = strtok(NULL, " \t");
+	}
+
 	tokens[i] = NULL;
+
 	return (tokens);
 }
 
-/**
- * free_tokens - frees a NULL-terminated array of strings
- * @tokens: array to free
- */
-void free_tokens(char **tokens)
-{
-	int i = 0;
-
-	if (tokens == NULL)
-		return;
-	while (tokens[i])
-	{
-		free(tokens[i]);
-		i++;
-	}
-	free(tokens);
-}

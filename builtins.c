@@ -1,39 +1,49 @@
 #include "shell.h"
 
 /**
- * print_env - prints each environment variable on its own line (Task 6)
+ * print_env - Prints the current environment variables
+ *
+ * Description: This function iterates through the global environment
+ * array and prints each variable in the format 'KEY=VALUE'. It is used
+ * to implement the 'env' built-in command in the shell.
+ *
+ * Return: Always 0.
  */
-void print_env(void)
+int print_env(void)
 {
-	int i = 0;
+	int i;
 
-	while (environ[i])
+	for (i = 0; environ[i] != NULL; i++)
 	{
 		write(STDOUT_FILENO, environ[i], strlen(environ[i]));
 		write(STDOUT_FILENO, "\n", 1);
-		i++;
 	}
+
+	return (0);
 }
 
 /**
- * handle_builtin - checks for and executes built-in commands
- * @args: tokenized command
- * @line: the raw line buffer (freed before exit to avoid leaks)
+ * is_number - checks if a string represents a valid integer
+ * @s: the string to check
  *
- * Return: 1 if a built-in was handled, 0 otherwise
+ * Description: This function verifies that the given string contains
+ * only digits, allowing an optional leading '+' or '-'. It is used to
+ * validate numeric arguments for built-in commands such as "exit".
+ *
+ * Return: 1 if the string is a valid number, 0 otherwise.
  */
-int handle_builtin(char **args, char *line)
+int is_number(char *s)
 {
-	if (strcmp(args[0], "exit") == 0)
+	int i = 0;
+
+	if (s == NULL)
+		return (0);
+	if (s[0] == '-' || s[0] == '+')
+		i++;
+	for (; s[i] != '\0'; i++)
 	{
-		free_tokens(args);
-		free(line);
-		exit(0);
+		if (s[i] < '0' || s[i] > '9')
+		return (0);
 	}
-	if (strcmp(args[0], "env") == 0)
-	{
-		print_env();
-		return (1);
-	}
-	return (0);
+	return (1);
 }

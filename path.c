@@ -1,88 +1,57 @@
 #include "shell.h"
 
 /**
- * get_env_value - finds a variable in environ by name
- * @name: variable name (e.g. "PATH")
+ * find_path - search for a command in the PATH directories
+ * @cmd: the command name (e.g. "ls")
  *
- * Return: pointer to value (after '='), or NULL if not found
+ * Description: This function checks whether a command contains>
+ * If it does, the function verifies that the path is executabl>
+ * returns a malloc'd copy. If the command has no slash, the fu>
+ * searches through the PATH environment variable, building ful>
+ * for each directory until an executable match is found.
+ *
+ * Return: A malloc'd string containing the full path to the co>
+ * or NULL if the command cannot be found or is not executable.
  */
-char *get_env_value(const char *name)
+char *find_path(char *cmd)
 {
-	int i = 0;
-	size_t nlen = strlen(name);
-
-	while (environ[i])
-	{
-		if (strncmp(environ[i], name, nlen) == 0 && environ[i][nlen] == '=')
-			return (environ[i] + nlen + 1);
-		i++;
-	}
-	return (NULL);
+char *copy, *dir, *full;
+int i;
+if (strchr(cmd, '/'))
+{
+if (access(cmd, X_OK) == 0)
+return (strdup(cmd));
+return (NULL);
 }
-
-/**
- * build_path - joins a directory and command with '/'
- * @dir: directory part (may be empty, meaning ".")
- * @cmd: command name
- *
- * Return: malloc'd full path, or NULL on failure
- */
-static char *build_path(const char *dir, const char *cmd)
+copy = NULL;
+for (i = 0; environ[i]; i++)
 {
-	size_t dlen, clen;
-	char *full;
-
-	if (dir == NULL || *dir == '\0')
-		dir = ".";
-	dlen = strlen(dir);
-	clen = strlen(cmd);
-	full = malloc(dlen + clen + 2);
-	if (full == NULL)
-		return (NULL);
-	strcpy(full, dir);
-	full[dlen] = '/';
-	strcpy(full + dlen + 1, cmd);
-	return (full);
+if (strncmp(environ[i], "PATH=", 5) == 0)
+{
+copy = strdup(environ[i] + 5);
+break;
 }
-
-/**
- * find_in_path - searches PATH directories for an executable command
- * @command: command name (e.g. "ls")
- *
- * Return: malloc'd full path if found and executable, NULL otherwise.
- *         If command contains '/', returns a duplicate of command if it
- *         is accessible.
- */
-char *find_in_path(char *command)
+}
+if (!copy)
+return (NULL);
+dir = strtok(copy, ":");
+while (dir)
 {
-	char *path, *path_dup, *dir, *full;
-
-	if (command == NULL || *command == '\0')
-		return (NULL);
-	if (strchr(command, '/') != NULL)
-	{
-		if (access(command, X_OK) == 0)
-			return (strdup(command));
-		return (NULL);
-	}
-	path = get_env_value("PATH");
-	if (path == NULL || *path == '\0')
-		return (NULL);
-	path_dup = strdup(path);
-	if (path_dup == NULL)
-		return (NULL);
-	dir = strtok(path_dup, ":");
-	while (dir)
-	{
-		full = build_path(dir, command);
-		if (full && access(full, X_OK) == 0)
-		{
-			free(path_dup);
-			return (full);
-		}
-		free(full);
-		dir = strtok(NULL, ":");
-	}
-	free(path_dup);
-	return (NULL);
+full = malloc(strlen(dir) + strlen(cmd) + 2);
+if (!full)
+{
+free(copy);
+return (NULL);
+}
+sprintf(full, "%s/%s", dir, cmd);
+if (access(full, X_OK) == 0)
+{
+free(copy);
+return (full);
+}
+free(full);
+dir = strtok(NULL, ":");
+}
+free(copy);
+return (NULL);
 }
