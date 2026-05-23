@@ -1,0 +1,142 @@
+.TH HSH 1 "May 2026" "hsh 1.0" "User Commands"
+.SH NAME
+hsh \- simple UNIX command interpreter
+.SH SYNOPSIS
+.B hsh
+.br
+.B ./hsh
+.SH DESCRIPTION
+.B hsh
+is a simple UNIX command language interpreter that executes commands read from
+standard input or from a file. It is a stripped-down reimplementation of
+.BR sh (1)
+that supports command execution with arguments and resolves program names
+against the
+.B PATH
+environment variable.
+.PP
+When invoked with no arguments and standard input is a terminal,
+.B hsh
+runs in
+.B interactive
+mode: it displays a prompt and reads commands one line at a time. When
+standard input is not a terminal (e.g. a pipe or a redirected file),
+.B hsh
+runs in
+.B non-interactive
+mode: it reads and executes commands without displaying a prompt, then exits
+on end-of-file.
+.SH INVOCATION
+.B hsh
+takes no command-line options. The shell is started simply by running its
+executable:
+.PP
+.RS 4
+./hsh
+.RE
+.SH COMMAND EXECUTION
+After reading a line of input,
+.B hsh
+splits it into tokens on whitespace. The first token is treated as the
+command name; any remaining tokens are passed as arguments.
+.PP
+If the command name contains a slash
+.RB ( / ),
+it is treated as a path and executed directly. Otherwise,
+.B hsh
+searches each directory listed in the
+.B PATH
+environment variable, in order, for an executable file of that name. The
+first match is executed via
+.BR execve (2)
+in a forked child process; the parent waits for the child to terminate
+before reading the next command.
+.PP
+If the command cannot be found in any
+.B PATH
+directory,
+.B hsh
+prints an error to standard error and does not fork a new process.
+.SH EXIT STATUS
+.B hsh
+returns the exit status of the last command executed. If a command is not
+found, the shell prints an error and the exit status is set to
+.BR 127 .
+On end-of-file (Ctrl-D in interactive mode),
+.B hsh
+exits with status
+.BR 0 .
+.SH ENVIRONMENT
+.TP
+.B PATH
+A colon-separated list of directories in which the shell looks for commands.
+If
+.B PATH
+is unset or empty, no PATH search is performed and only commands given as
+explicit paths can be executed.
+.SH EXAMPLES
+.PP
+Interactive use:
+.PP
+.RS 4
+.nf
+$ ./hsh
+($) /bin/ls
+file1  file2  hsh
+($) ls -l /tmp
+total 0
+($)
+$
+.fi
+.RE
+.PP
+Non-interactive use:
+.PP
+.RS 4
+.nf
+$ echo "/bin/ls" | ./hsh
+file1  file2  hsh
+
+$ cat commands.txt | ./hsh
+.fi
+.RE
+.PP
+Command not found:
+.PP
+.RS 4
+.nf
+$ echo "qwerty" | ./hsh
+./hsh: 1: qwerty: not found
+.fi
+.RE
+.SH LIMITATIONS
+.B hsh
+is intentionally minimal. It does not currently support:
+.IP \[bu] 2
+Built-in commands such as
+.B cd
+or
+.BR exit .
+.IP \[bu] 2
+Pipelines
+.RB ( | )
+or I/O redirection
+.RB ( > ", " < ).
+.IP \[bu] 2
+Variable expansion or quoting.
+.IP \[bu] 2
+Background execution
+.RB ( & ).
+.IP \[bu] 2
+Command history or line editing.
+.SH SEE ALSO
+.BR sh (1),
+.BR bash (1),
+.BR execve (2),
+.BR fork (2),
+.BR wait (2),
+.BR access (2)
+.SH BUGS
+No known bugs. Report issues to the authors via the project repository.
+.SH AUTHORS
+Written by Leen Algraawi and Shahd Shahd as a Holberton School project.
